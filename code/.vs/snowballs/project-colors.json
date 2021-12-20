@@ -1,0 +1,21 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "1e06b2d1-6385-4f1d-b41e-530b14b28326": {
+      "ProjectGuid": "1e06b2d1-6385-4f1d-b41e-530b14b28326",
+      "DisplayName": "snowballs",
+      "ColorIndex": 0
+    },
+    "5fc39fa7-891a-4d71-b2ac-7e71b8565dfc": {
+      "ProjectGuid": "5fc39fa7-891a-4d71-b2ac-7e71b8565dfc",
+      "DisplayName": "snowballs",
+      "ColorIndex": 1
+    },
+    "ecacde04-05c6-47de-98d6-1d3e89f2b8a6": {
+      "ProjectGuid": "ecacde04-05c6-47de-98d6-1d3e89f2b8a6",
+      "DisplayName": "snowballs",
+      "ColorIndex": 2
+    }
+  },
+  "NextColorIndex": 3
+}
