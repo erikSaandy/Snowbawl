@@ -9,9 +9,9 @@ public partial class SnowballGame : Game
 	[Net, Local] public static float SpeedMultiplier { get; set; } = 1;
 	[Net, Local] public static Vector3 CameraForward { get; set; }
 
-	[Net, Local] public static bool PlayerDead { get; set; } = false;
+	public static bool PlayerDead { get; set; } = false;
 	private float DeathTime = 5;
-	[Net, Local] public static float DeathTimer { get; set; }
+	public static float DeathTimer { get; set; }
 
 	public SnowBallHud Hud { get; private set; }
 
@@ -95,6 +95,8 @@ public partial class SnowballGame : Game
 		cl.Pawn = player;
 		cl.Camera = new FollowCamera();
 		(cl.Camera as FollowCamera).Ball = player;
+		// Most basic way to create a particle system
+
 	}
 
 	public override void DoPlayerNoclip( Client player )

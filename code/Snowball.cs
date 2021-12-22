@@ -33,9 +33,9 @@ public partial class Snowball : ModelEntity
 
 		Tags.Add( "snowball" );
 
-		SmallMovement = new MovementData( 700, 1000, 2000 );
-		MediumMovement = new MovementData( 500, 1200, 1000 );
-		BigMovement = new MovementData( 300, 1400, 0 );
+		SmallMovement = new MovementData( 700, 1000, 3000 );
+		MediumMovement = new MovementData( 650, 1200, 3000 );
+		BigMovement = new MovementData( 600, 1400, 0 );
 
 		//Camera = new FollowCamera( );
 		//(Camera as FollowCamera).Ball = this;
@@ -76,6 +76,10 @@ public partial class Snowball : ModelEntity
 
 	public override void ClientSpawn()
 	{
+
+		// Most basic way to create a particle system
+		Particles MyParticle = Particles.Create( "particles/snowfall.vpcf", this, "origin", true );
+
 		base.ClientSpawn();
 
 	}

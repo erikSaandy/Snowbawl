@@ -25,17 +25,17 @@ public partial class Snowball : ModelEntity
 
 	[Net, Predicted] public bool Charging { get; set; } = false;
 
+	public bool HasAirJump = false;
+	public const float DoubleJumpForce = 300;
+
+
 	private void UpdateGrounded()
 	{
 		LastGrounded = CurrentGrounded;
 
-		if(Velocity.y > 0.1f)
-		{
-			CurrentGrounded = false;
-			return;
-		}
+		float dst = Radius + 4;
 
-		TraceResult t = Trace.Ray( Position, Position + (Vector3.Down * Radius ) + Velocity.y )
+		TraceResult t = Trace.Ray( Position, Position + (Vector3.Down * dst) )
 			.Ignore( this )
 			.WorldOnly()
 			.Run();
@@ -92,6 +92,22 @@ public partial class Snowball : ModelEntity
 		UpdateGrounded();
 		PhysicsBody.Mass = CurrentMovement.mass;
 
+		// AIR JUMP //
+		if(CurrentGrounded)
+		{
+			HasAirJump = true;
+		}
+
+		if(HasAirJump)
+		{
+			if(Input.Pressed(InputButton.Jump))
+			{
+				Velocity = new Vector3( Velocity.x, Velocity.y, DoubleJumpForce );
+				HasAirJump = false;
+			}
+		}
+		// //
+
 		// SCALING
 		if ( TargetScale < 3 )
 		{
@@ -110,7 +126,7 @@ public partial class Snowball : ModelEntity
 		LastPosition = Position;
 
 		// SLOW DOWN
-		if ( Input.Down( InputButton.Duck ) )
+		if ( Input.Down( InputButton.Duck ) && CurrentGrounded )
 		{
 			SnowballGame.SetSpeedmultiplier( 0.9f );
 		}
