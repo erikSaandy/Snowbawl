@@ -18,9 +18,9 @@ public partial class Snowball : ModelEntity
 	[Net, Predicted] public float Charge { get; set; } = 1;
 	[Net, Local] public bool ChargeCooldown { get; set; } = false;
 
-	private MovementData SmallMovement { get; set; }
-	private MovementData MediumMovement { get; set; }
-	private MovementData BigMovement { get; set; }
+	private static MovementData SmallMovement { get; set; }
+	private static MovementData MediumMovement { get; set; }
+	private static MovementData BigMovement { get; set; }
 	[Net, Local] public MovementData CurrentMovement { get; set; }
 
 	[Net, Predicted] public bool Charging { get; set; } = false;
@@ -28,6 +28,7 @@ public partial class Snowball : ModelEntity
 	public bool HasAirJump = false;
 	public const float DoubleJumpForce = 300;
 
+	public Particles DeathFunnelParticles = null;
 
 	private void UpdateGrounded()
 	{
@@ -178,6 +179,29 @@ public partial class Snowball : ModelEntity
 			}	
 		}
 
+		// DEATH FUNNEL PARTICLE //
+		if(Velocity.Length > CurrentMovement.killSpeed)
+		{
+			if ( DeathFunnelParticles == null )
+			{
+				DeathFunnelParticles = Particles.Create( "particles/deathfunnel.vpcf", this, "origin", true );
+			}
+
+			DeathFunnelParticles.SetForward( 1, -Velocity.Normal );
+			DeathFunnelParticles.SetPosition( 2, Vector3.One * TargetScale );
+
+		}
+		else
+		{
+
+			if(DeathFunnelParticles != null)
+			{
+				DeathFunnelParticles.Destroy( true );
+				DeathFunnelParticles = null;
+			}
+
+		}
+
 		//
 
 		if ( Input.Pressed( InputButton.Flashlight ) )
@@ -284,20 +308,6 @@ public partial class Snowball : ModelEntity
 		Velocity *= SnowballGame.SpeedMultiplier;
 		AngularVelocity *= SnowballGame.SpeedMultiplier * 0f;
 
-	}
-
-	public struct MovementData
-	{
-		public float speed;
-		public float mass;
-		public float distanceToGrow;
-
-		public MovementData( float speed, float mass, float distanceToGrow )
-		{			
-			this.speed = speed;
-			this.mass = mass;
-			this.distanceToGrow = distanceToGrow;
-		}
 	}
 
 }

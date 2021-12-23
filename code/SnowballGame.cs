@@ -9,9 +9,9 @@ public partial class SnowballGame : Game
 	[Net, Local] public static float SpeedMultiplier { get; set; } = 1;
 	[Net, Local] public static Vector3 CameraForward { get; set; }
 
-	public static bool PlayerDead { get; set; } = false;
-	private float DeathTime = 5;
-	public static float DeathTimer { get; set; }
+	[Net, Local] public static bool PlayerDead { get; set; } = false;
+	private const float DeathTime = 5;
+	[Net, Local] public static float DeathTimer { get; set; }
 
 	public SnowBallHud Hud { get; private set; }
 
@@ -53,6 +53,7 @@ public partial class SnowballGame : Game
 	{
 		if ( PlayerDead )
 		{
+			Log.Info( cl.Pawn );
 
 			if ( DeathTimer > 0 )
 			{
@@ -95,7 +96,6 @@ public partial class SnowballGame : Game
 		cl.Pawn = player;
 		cl.Camera = new FollowCamera();
 		(cl.Camera as FollowCamera).Ball = player;
-		// Most basic way to create a particle system
 
 	}
 
@@ -182,6 +182,22 @@ public partial class SnowballGame : Game
 		BaseViewModel.UpdateAllPostCamera( ref camSetup );
 
 		CameraModifier.Apply( ref camSetup );
+	}
+
+	/// <summary>
+	/// Client has disconnected from the server. Remove their entities etc.
+	/// </summary>
+	public override void ClientDisconnect( Client cl, NetworkDisconnectionReason reason )
+	{
+		Log.Info( $"\"{cl.Name}\" has left the game ({reason})" );
+		Sandbox.UI.ChatBox.AddInformation( To.Everyone, $"{cl.Name} has left ({reason})", $"avatar:{cl.PlayerId}" );
+
+		if ( cl.Pawn.IsValid() )
+		{
+			cl.Pawn.Delete();
+			cl.Pawn = null;
+		}
+
 	}
 
 	[ServerCmd]

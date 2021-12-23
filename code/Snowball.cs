@@ -19,6 +19,8 @@ public partial class Snowball : ModelEntity
 
 	public override void Spawn()
 	{
+		Log.Info( "Spawn" );
+
 		base.Spawn();
 
 		SetModel( Model );
@@ -33,9 +35,11 @@ public partial class Snowball : ModelEntity
 
 		Tags.Add( "snowball" );
 
-		SmallMovement = new MovementData( 700, 1000, 3000 );
-		MediumMovement = new MovementData( 650, 1200, 3000 );
-		BigMovement = new MovementData( 600, 1400, 0 );
+
+		Log.Info( "new movement data." );
+		SmallMovement = new MovementData( 700, 1000, 1500, 650 );
+		MediumMovement = new MovementData( 650, 1200, 1500, 550 );
+		BigMovement = new MovementData( 600, 1400, 0, 350 );
 
 		//Camera = new FollowCamera( );
 		//(Camera as FollowCamera).Ball = this;
@@ -102,4 +106,24 @@ public partial class Snowball : ModelEntity
 	{
 		Cam.Angles = new( 14, angles.yaw, 0 );
 	}
+
+
+
+	public struct MovementData
+	{
+		public float speed = -1;
+		public float mass;
+		public float distanceToGrow;
+		public float killSpeed;
+
+		public MovementData( float speed, float mass, float distanceToGrow, float killSpeed )
+		{
+			this.speed = speed;
+			this.mass = mass;
+			this.distanceToGrow = distanceToGrow;
+			this.killSpeed = killSpeed;
+
+		}
+	}
+
 }

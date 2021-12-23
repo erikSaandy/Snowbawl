@@ -12,6 +12,9 @@ public class DeathCamera : Camera
 	float MoveSpeed;
 	float LerpMode = 0;
 
+	float velY = 0;
+	bool grounded = false;
+
 	public DeathCamera()
 	{
 		TargetPos = CurrentView.Position;
@@ -20,6 +23,8 @@ public class DeathCamera : Camera
 		Position = TargetPos;
 		Rotation = TargetRot;
 		LookAngles = Rotation.Angles();
+
+		velY = 3;
 	}
 
 	public override void Update()
@@ -38,7 +43,17 @@ public class DeathCamera : Camera
 			DoFPoint = lerpTarget;// DoFPoint.LerpTo( lerpTarget, Time.Delta * 10 );
 		}
 
-		FreeMove();
+		if ( !grounded )
+		{
+			velY -= Time.Delta * 30;
+			Position = new Vector3( Position.x, Position.y, Position.z + velY );
+
+			tr = Trace.Ray( Position, Position + (Vector3.Down * 20)).WorldOnly().Run();
+			grounded = tr.Hit;
+
+		}
+
+		FreeRotation();
 	}
 		
 	public override void BuildInput(InputBuilder input)
@@ -68,14 +83,10 @@ public class DeathCamera : Camera
 		input.StopProcessing = true;
 	}
 
-	void FreeMove()
+	void FreeRotation()
 	{
-		var mv = MoveInput.Normal * 300 * RealTime.Delta * Rotation * MoveSpeed;
 
 		TargetRot = Rotation.From(LookAngles);
-		TargetPos += mv;
-
-		Position = Vector3.Lerp(Position, TargetPos, 10 * RealTime.Delta * (1 - LerpMode));
 		Rotation = Rotation.Slerp(Rotation, TargetRot, 10 * RealTime.Delta * (1 - LerpMode));
 	}
 }
