@@ -103,7 +103,9 @@ public partial class Snowball : ModelEntity
 		{
 			if(Input.Pressed(InputButton.Jump))
 			{
-				Velocity = new Vector3( Velocity.x, Velocity.y, DoubleJumpForce );
+				float mag = Velocity.Length - DoubleJumpForce;
+				
+				Velocity = (Direction.Direction * mag) + (Vector3.Up * DoubleJumpForce) ;
 				HasAirJump = false;
 			}
 		}
@@ -146,7 +148,7 @@ public partial class Snowball : ModelEntity
 		}
 		else if( !ChargeCooldown && Input.Released( InputButton.Attack2 ) ) // On Charge
 		{
-			OnCharge();
+			OnBoost();
 		}
 
 		// MOVEMENT
@@ -188,7 +190,9 @@ public partial class Snowball : ModelEntity
 			}
 
 			DeathFunnelParticles.SetForward( 1, -Velocity.Normal );
-			DeathFunnelParticles.SetPosition( 2, Vector3.One * TargetScale );
+			DeathFunnelParticles.SetPosition( 2, Vector3.One * Scale );
+
+			OnAttack();
 
 		}
 		else
@@ -211,6 +215,28 @@ public partial class Snowball : ModelEntity
 		}
 
 	}
+	
+	public void OnAttack()
+	{
+		Vector3 offset = (Position - LastPosition).Normal * 4;
+		TraceResult[] t = Trace.Ray( LastPosition + offset, Position + offset )
+			.Ignore( this )
+			.EntitiesOnly()
+			.Radius( Radius )
+			.RunAll();
+
+		if ( t == null ) return;
+
+		foreach (TraceResult tr in t)
+		{
+			DebugOverlay.TraceResult( tr, 0.01f );
+			if (tr.Entity is not Snowball) { return; }
+			Snowball other = tr.Entity as Snowball;
+			Log.Info( other.Client.Name  );
+			other.OnKilled(Client, this);
+
+		}
+	}
 
 	public override void OnKilled()
 	{
@@ -218,6 +244,20 @@ public partial class Snowball : ModelEntity
 		Client.Camera = new DeathCamera();
 		SnowballGame.PlayerDead = true;
 		
+	}
+
+	/// <summary>
+	/// An entity, which is a pawn, and has a client, has been killed.
+	/// </summary>
+	public virtual void OnKilled( Client other, Entity otherPawn )
+	{
+		Host.AssertServer();
+
+		Log.Info( $"{Client.Name} was killed" );
+
+		OnKilledMessage( other.PlayerId, other.Name, Client.PlayerId, Client.Name, "Smashed" );
+
+		OnKilled();
 	}
 
 	/// <summary>
@@ -229,9 +269,11 @@ public partial class Snowball : ModelEntity
 		Sandbox.UI.KillFeed.Current?.AddEntry( leftid, left, rightid, right, method );
 	}
 
-	private void OnCharge()
+	private void OnBoost()
 	{
-		Velocity = SnowballGame.CameraForward * 1000 * (1 - Charge);
+		float mag = Velocity.Length;
+
+		Velocity = SnowballGame.CameraForward * 1000 * (1 - Charge) + (SnowballGame.CameraForward * mag);
 		Charging = true;
 		ChargeCooldown = true;
 

@@ -57,7 +57,6 @@ public partial class SnowballGame : Game
 
 			if ( DeathTimer > 0 )
 			{
-				Log.Info( DeathTimer );
 				DeathTimer -= Time.Delta;
 			}
 			else

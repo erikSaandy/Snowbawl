@@ -7,7 +7,7 @@ Layer0
 	//---- Ambient Occlusion ----
 	g_flAmbientOcclusionDirectDiffuse "0.000"
 	g_flAmbientOcclusionDirectSpecular "0.000"
-	TextureAmbientOcclusion "materials/default/default_ao.tga"
+	TextureAmbientOcclusion "models/snowball/material/snowball_ao.png"
 
 	//---- Color ----
 	g_flModelTintAmount "1.000"
@@ -28,7 +28,7 @@ Layer0
 	g_flMetalness "0.000"
 
 	//---- Normal ----
-	TextureNormal "[0.501961 0.501961 1.000000 0.000000]"
+	TextureNormal "models/snowball/material/snowball_normal.png"
 
 	//---- Roughness ----
 	TextureRoughness "models/snowball/material/snowball_rough.png"

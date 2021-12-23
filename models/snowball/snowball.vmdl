@@ -14,7 +14,7 @@
 						remaps = 
 						[
 							{
-								from = "lambert2.vmat"
+								from = "lambert1.vmat"
 								to = "models/snowball/material/snowball.vmat"
 							},
 						]
